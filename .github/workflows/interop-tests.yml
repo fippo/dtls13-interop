@@ -1,0 +1,20 @@
+on: push
+
+jobs:
+  interop:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 5
+    strategy:
+      fail-fast: false
+      matrix:
+        browserA: [chrome]
+        browserB: [chrome, firefox]
+        bver: [unstable]
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-node@v4
+    - run: npm install
+    - run: sudo rm /usr/bin/chromedriver /usr/bin/geckodriver # remove preinstalled github chromedriver/geckodriver from $PATH
+    - run: Xvfb :99 &
+    - run: BROWSER_A=${{matrix.browserA}} BROWSER_B=${{matrix.browserB}} BVER=${{matrix.bver}} DISPLAY=:99.0 node test/download-browsers.js
+    - run: BROWSER_A=${{matrix.browserA}} BROWSER_B=${{matrix.browserB}} BVER=${{matrix.bver}} DISPLAY=:99.0 node_modules/.bin/jest --retries=3 test/interop/
