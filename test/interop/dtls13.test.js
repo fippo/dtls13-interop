@@ -9,23 +9,27 @@ const {buildDriver} = require('../webdriver');
 const {PeerConnection, MediaDevices} = require('../webrtcclient');
 const steps = require('../steps');
 
-const browserA = process.env.BROWSER_A || 'chrome';
-const browserB = process.env.BROWSER_B || 'chrome';
+// browser,version,DTLS version,forcetrialstring
+const browserA = process.env.BROWSER_A || 'chrome%stable%notused%';
+const browserB = process.env.BROWSER_B || 'chrome%stable%FEFD%';
 
-describe(`${browserA} => ${browserB} uses DTLS 1.3`, function() {
+function makeOptions(browser) {
+  return {
+    version: browser.split(',')[1],
+    browserLogging: true,
+    chromeFlags: [
+      '--force-fieldtrials=' + browser.split(',')[3],
+    ]
+  };
+}
+
+describe(`${browserA} => ${browserB}`, function() {
   let drivers;
   let clients;
   beforeAll(async () => {
-    const options = {
-      version: process.env.BVER || 'stable',
-      browserLogging: true,
-      chromeFlags: [
-        '--force-fieldtrials=WebRTC-ForceDtls13/Enabled/'
-      ]
-    };
     drivers = [
-      await buildDriver(browserA, options),
-      await buildDriver(browserB, options),
+      await buildDriver(browserA.split(',')[0], makeOptions(browserA)),
+      await buildDriver(browserB.split(',')[0], makeOptions(browserB)),
     ];
     clients = drivers.map(driver => {
       return {
@@ -56,9 +60,10 @@ describe(`${browserA} => ${browserB} uses DTLS 1.3`, function() {
     await steps.step(drivers, (d) => steps.waitNVideosExist(d, 1), 'Video elements exist');
     await steps.step(drivers, steps.waitAllVideosHaveEnoughData, 'Video elements have enough data');
 
-    const stats = await clients[0].connection.getStats();
+    // Take stats from the second connection.
+    const stats = await clients[1].connection.getStats();
     const transportStats = [...stats.values()].filter(({type}) => type === 'transport');
     expect(transportStats.length).toBe(1);
-    expect(transportStats[0].tlsVersion).toBe('FEFC'); // FEFD => DTLS 1.2, FEFC => DTLS 1.3
+    expect(transportStats[0].tlsVersion).toBe(browserB.split(',')[2]); // FEFD => DTLS 1.2, FEFC => DTLS 1.3
   }, 30000);
 }, 90000);

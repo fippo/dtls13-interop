@@ -7,9 +7,13 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        browserA: [chrome]
-        browserB: [chrome, firefox]
-        bver: [unstable]
+        browserA:
+          - chrome,unstable,notused,WebRTC-ForceDtls13/Enabled/
+          - firefox,unstable,notused,
+        browserB:
+          - chrome,unstable,FEFD,
+          - chrome,unstable,FEFC,WebRTC-ForceDtls13/Enabled/
+          - firefox,unstable,notsupported,
     steps:
     - uses: actions/checkout@v4
     - uses: actions/setup-node@v4
