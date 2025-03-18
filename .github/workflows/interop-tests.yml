@@ -1,4 +1,7 @@
-on: push
+on:
+  schedule:
+    - cron: "30 5 * * *"
+  pull_request:
 
 jobs:
   interop:
