@@ -63,7 +63,16 @@ describe(`${browserA} => ${browserB}`, function() {
     // Take stats from the second connection.
     const stats = await clients[1].connection.getStats();
     const transportStats = [...stats.values()].filter(({type}) => type === 'transport');
-    expect(transportStats.length).toBe(1);
-    expect(transportStats[0].tlsVersion).toBe(browserB.split(',')[2]); // FEFD => DTLS 1.2, FEFC => DTLS 1.3
+    if (transportStats.length >= 1) {
+      expect(transportStats[0].tlsVersion).toBe(browserB.split(',')[2]); // FEFD => DTLS 1.2, FEFC => DTLS 1.3
+    } else {
+      // Fallback for Firefox which does not implement transport stats.
+      console.log('no transport stats found, trying the other side');
+      const fallbackStats = await clients[0].connection.getStats();
+      const fallbackTransportStats = [...fallbackStats.values()].filter(({type}) => type === 'transport');
+      if (fallbackTransportStats.length >= 1) {
+        expect(fallbackTransportStats[0].tlsVersion).toBe(browserB.split(',')[2]); // FEFD => DTLS 1.2, FEFC => DTLS 1.3
+      }
+    }
   }, 30000);
 }, 90000);

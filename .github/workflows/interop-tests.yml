@@ -1,4 +1,7 @@
-on: push
+on:
+  schedule:
+    - cron: "30 5 * * *"
+  pull_request:
 
 jobs:
   interop:
@@ -11,9 +14,9 @@ jobs:
           - chrome,unstable,notused,WebRTC-ForceDtls13/Enabled/
           - firefox,unstable,notused,
         browserB:
-          - chrome,unstable,FEFD,
+          - chrome,unstable,FEFD,WebRTC-ForceDtls13/Disabled/
           - chrome,unstable,FEFC,WebRTC-ForceDtls13/Enabled/
-          - firefox,unstable,notsupported,
+          - firefox,unstable,FEFC,
     steps:
     - uses: actions/checkout@v4
     - uses: actions/setup-node@v4
