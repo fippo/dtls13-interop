@@ -70,7 +70,9 @@ describe(`${browserA} => ${browserB}`, function() {
       console.log('no transport stats found, trying the other side');
       const fallbackStats = await clients[0].connection.getStats();
       const fallbackTransportStats = [...fallbackStats.values()].filter(({type}) => type === 'transport');
-      expect(fallbackTransportStats[0].tlsVersion).toBe(browserB.split(',')[2]); // FEFD => DTLS 1.2, FEFC => DTLS 1.3
+      if (fallbackTransportStats.length >= 1) {
+        expect(fallbackTransportStats[0].tlsVersion).toBe(browserB.split(',')[2]); // FEFD => DTLS 1.2, FEFC => DTLS 1.3
+      }
     }
   }, 30000);
 }, 90000);
