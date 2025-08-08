@@ -62,9 +62,6 @@ async function buildDriver(browser = process.env.BROWSER || 'chrome', options = 
   if (options.chromeFlags) {
     options.chromeFlags.forEach((flag) => chromeOptions.addArguments(flag));
   }
-  if (options.chromeFlags) {
-    options.chromeFlags.forEach((flag) => chromeOptions.addArguments(flag));
-  }
   if (options.chromepath) {
     chromeOptions.setChromeBinaryPath(options.chromepath);
   } else {
@@ -125,6 +122,7 @@ async function buildDriver(browser = process.env.BROWSER || 'chrome', options = 
   firefoxOptions.setPreference('media.navigator.streams.fake', true);
   firefoxOptions.setPreference('media.navigator.permission.disabled', true);
   firefoxOptions.setPreference('media.peerconnection.dtls.version.max', 772);
+  firefoxOptions.setPreference('media.webrtc.enable_pq_dtls', true);
 
   const driver = new webdriver.Builder()
       .setChromeOptions(chromeOptions)
