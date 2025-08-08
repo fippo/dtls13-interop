@@ -16,6 +16,7 @@ jobs:
         browserB:
           - chrome,unstable,FEFD,WebRTC-ForceDtls13/Disabled/
           - chrome,unstable,FEFC,WebRTC-ForceDtls13/Enabled/
+          - chrome,unstable,FEFC,WebRTC-ForceDtls13/Enabled/WebRTC-EnableDtlsPqc/Enabled/
           - firefox,unstable,FEFC,
     steps:
     - uses: actions/checkout@v4
